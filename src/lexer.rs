@@ -5,9 +5,9 @@ use lexical::parse_lossy;
 use ordered_float::*;
 use rug::Integer;
 
-use ast::*;
-use string_list::*;
-use tabled_rc::*;
+use crate::ast::*;
+use crate::string_list::*;
+use crate::tabled_rc::*;
 
 use std::io::Read;
 use std::rc::Rc;
@@ -717,15 +717,15 @@ impl<'a, R: Read> Lexer<'a, R> {
 
             match cr {
                 Ok(c) if layout_char!(c) => {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     layout_inserted = true;
                 },
                 Ok(c) if c == '%' => {
-                    try!(self.single_line_comment());
+                    self.single_line_comment()?;
                     layout_inserted = true;
                 },
                 Ok(c) if c == '/' =>
-                    if try!(self.bracketed_comment()) {
+                    if self.bracketed_comment()? {
                         layout_inserted = true;
                     } else {
                         more_layout = false;
@@ -742,7 +742,7 @@ impl<'a, R: Read> Lexer<'a, R> {
     }
 
     pub fn next_token(&mut self) -> Result<Token, ParserError> {
-        let layout_inserted = try!(self.scan_for_layout());
+        let layout_inserted = self.scan_for_layout()?;
         let cr = self.lookahead_char();
 
         match cr {
@@ -752,17 +752,17 @@ impl<'a, R: Read> Lexer<'a, R> {
                 }
 
                 if c == ',' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::Comma);
                 }
 
                 if c == ')' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::Close);
                 }
 
                 if c == '(' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(if layout_inserted { Token::Open }
                               else { Token::OpenCT });
                 }
@@ -789,27 +789,27 @@ impl<'a, R: Read> Lexer<'a, R> {
                 }
 
                 if c == ']' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::CloseList);
                 }
 
                 if c == '[' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::OpenList);
                 }
 
                 if c == '|' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::HeadTailSeparator);
                 }
 
                 if c == '{' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::OpenCurly);
                 }
 
                 if c == '}' {
-                    try!(self.skip_char());
+                    self.skip_char()?;
                     return Ok(Token::CloseCurly);
                 }
 

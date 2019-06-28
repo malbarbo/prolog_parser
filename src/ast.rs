@@ -1,9 +1,9 @@
 use rug::{Integer, Rational};
 use ordered_float::*;
-use string_list::*;
-use tabled_rc::*;
+use crate::string_list::*;
+use crate::tabled_rc::*;
 
-use put_back_n::*;
+use crate::put_back_n::*;
 
 use std::cell::Cell;
 use std::cmp::Ordering;
